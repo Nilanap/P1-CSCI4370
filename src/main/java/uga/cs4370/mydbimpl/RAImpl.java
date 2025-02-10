@@ -6,6 +6,8 @@ import uga.cs4370.mydb.Predicate;
 import uga.cs4370.mydb.RA;
 import uga.cs4370.mydb.Relation;
 
+// Testing out Nilan Branch
+
 public class RAImpl implements RA {
 
     @Override
