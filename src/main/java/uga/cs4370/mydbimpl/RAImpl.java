@@ -45,7 +45,9 @@ public class RAImpl implements RA {
 
     @Override
     public Relation join(Relation rel1, Relation rel2, Predicate p) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // IllegalArgumentException thrown by cartesianProduct allowed
+        Relation cartesianProduct = cartesianProduct(rel1, rel2);
+        return select(cartesianProduct, p);
     }
     
 }
