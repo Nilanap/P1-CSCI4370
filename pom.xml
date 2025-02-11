@@ -40,6 +40,12 @@
       <artifactId>junit-jupiter-params</artifactId>
       <scope>test</scope>
     </dependency>
+  
+    <dependency>
+      <groupId>tech.picnic.jolo</groupId>
+      <artifactId>jolo</artifactId>
+      <version>0.0.2</version>
+    </dependency>
   </dependencies>
 
   <build>
