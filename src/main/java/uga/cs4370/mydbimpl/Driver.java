@@ -2,6 +2,7 @@ package uga.cs4370.mydbimpl;
 
 import java.util.List;
 
+import uga.cs4370.mydb.Predicate;
 import uga.cs4370.mydb.RA;
 import uga.cs4370.mydb.Relation;
 import uga.cs4370.mydb.RelationBuilder;
@@ -26,9 +27,14 @@ public class Driver {
         department.loadData("/Users/nilanpatel/Desktop/Junior Year /Junior Year S2/DataBase Mgmtn CSCI 4370/department_export.csv");
         System.out.println("Department Relation:");
         department.print();
+        Relation student = new RelationBuilder()
+                .attributeNames(List.of("Student_ID", " Last Name", "Major", "Credit Hours"))
+                .attributeTypes(List.of(Type.DOUBLE, Type.STRING, Type.STRING, Type.DOUBLE))
+                .build();
+        student.loadData("/Users/nilanpatel/Desktop/Junior Year /Junior Year S2/DataBase Mgmtn CSCI 4370/student_export.csv");
 
         // this all tests project and select operations
-        /* 
+        
         // instructors above 70k (test select)
         Predicate salaryGreaterThan70k = row -> {
             double salary = row.get(3).getAsDouble(); 
@@ -75,15 +81,16 @@ public class Driver {
         System.out.println("\nProjected Relation (Name and Salary):");
         projectedRelation.print();
 
-        */
+        
 
         // this  test cart product
+        // lol dont try w student x instructor it is ALOT of combos and takes 3 mins 
 
         try {
             Relation cartesianProductResult = ra.cartesianProduct(instructor, department);
 
             // Print the result of the Cartesian Product.
-            System.out.println("\nCartesian Product of Instructor and Department:");
+            System.out.println("\nCartesian Product of Instructor and Student:");
             cartesianProductResult.print();
         } catch (IllegalArgumentException e) {
             System.out.println("\nError: " + e.getMessage());
