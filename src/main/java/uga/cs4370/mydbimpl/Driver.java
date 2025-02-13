@@ -2,7 +2,6 @@ package uga.cs4370.mydbimpl;
 
 import java.util.List;
 
-import uga.cs4370.mydb.Predicate;
 import uga.cs4370.mydb.RA;
 import uga.cs4370.mydb.Relation;
 import uga.cs4370.mydb.RelationBuilder;
@@ -13,6 +12,47 @@ public class Driver {
     public static void main(String[] args) {
         RA ra = new RAImpl();
 
+        Relation instructorModified = new RelationBuilder()
+       .attributeNames(List.of("ID", "name", "dept_name", "cred_salary")) // Renaming salary as "cred_salary"
+       .attributeTypes(List.of(Type.STRING, Type.STRING, Type.STRING, Type.DOUBLE))
+       .build();
+
+        Relation studentModified = new RelationBuilder()
+            .attributeNames(List.of("ID", "name", "dept_name", "cred_salary")) // Renaming tot_cred as "cred_salary"
+            .attributeTypes(List.of(Type.STRING, Type.STRING, Type.STRING, Type.DOUBLE))
+            .build();
+
+        instructorModified.loadData("/Users/nilanpatel/Desktop/Junior Year /Junior Year S2/DataBase Mgmtn CSCI 4370/instructor_export.csv");
+        studentModified.loadData("/Users/nilanpatel/Desktop/Junior Year /Junior Year S2/DataBase Mgmtn CSCI 4370/instructor_export.csv");
+
+        Relation unionResult = ra.union(instructorModified, studentModified);
+
+        System.out.println("Union of Instructor and Student:");
+        unionResult.print();
+
+        // Should throw exception
+        Relation instructor = new RelationBuilder()
+            .attributeNames(List.of("ID", "name", "dept_name", "salary")) // Original instructor schema
+            .attributeTypes(List.of(Type.STRING, Type.STRING, Type.STRING, Type.DOUBLE))
+            .build();
+
+        Relation student = new RelationBuilder()
+            .attributeNames(List.of("ID", "name", "dept_name", "tot_cred")) // Original student schema
+            .attributeTypes(List.of(Type.STRING, Type.STRING, Type.STRING, Type.DOUBLE))
+            .build();
+
+        instructor.loadData("/Users/nilanpatel/Desktop/Junior Year /Junior Year S2/DataBase Mgmtn CSCI 4370/instructor_export.csv");
+        student.loadData("/Users/nilanpatel/Desktop/Junior Year /Junior Year S2/DataBase Mgmtn CSCI 4370/student_export.csv");
+
+
+        try {
+        Relation unionResult1 = ra.union(instructor, student);
+        System.out.println("Test Failed: Union should not be possible!");
+        } catch (IllegalArgumentException e) {
+        System.out.println("Test Passed: Caught expected IllegalArgumentException -> " + e.getMessage());
+        }
+
+        /*  
         Relation instructor = new RelationBuilder()
                 .attributeNames(List.of("Instructor_ID", "Name", "Department", "Salary"))
                 .attributeTypes(List.of(Type.INTEGER, Type.STRING, Type.STRING, Type.DOUBLE))
@@ -95,6 +135,7 @@ public class Driver {
         } catch (IllegalArgumentException e) {
             System.out.println("\nError: " + e.getMessage());
         }
+            */
 
 
     }

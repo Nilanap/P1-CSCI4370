@@ -79,9 +79,46 @@ public class RAImpl implements RA {
     
 
     @Override
+    
     public Relation union(Relation rel1, Relation rel2) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // Schemas have to match
+        if (!rel1.getAttrs().equals(rel2.getAttrs())) {
+            throw new IllegalArgumentException("Relations must have the same attributes for union.");
+        }
+        if (!rel1.getTypes().equals(rel2.getTypes())) {
+            throw new IllegalArgumentException("Relations must have the same types for union.");
+        }
+
+        // Create a new relation with the same schema as rel1 and rel2.
+        Relation result = new RelationBuilder()
+                .attributeNames(rel1.getAttrs())
+                .attributeTypes(rel1.getTypes())
+                .build();
+
+        // Include all rows from rel1
+        for (int i = 0; i < rel1.getSize(); i++) {
+            result.insert(rel1.getRow(i));
+        }
+
+        // Include rows from rel2, avoiding duplicates
+        for (int i = 0; i < rel2.getSize(); i++) {
+            List<Cell> row = rel2.getRow(i);
+
+            boolean duplicate = false;
+            for (int j = 0; j < result.getSize(); j++) {
+                if (result.getRow(j).equals(row)) { // Fix: Use j instead of i
+                    duplicate = true;
+                    break;
+                }
+            }
+            if (!duplicate) {
+                result.insert(row);
+            }
+        }
+
+        return result;
     }
+
 
     @Override
     public Relation diff(Relation rel1, Relation rel2) {
