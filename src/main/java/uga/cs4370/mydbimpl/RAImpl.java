@@ -35,6 +35,9 @@ public class RAImpl implements RA {
         return result;
     }
 
+
+
+
     @Override
     public Relation project(Relation rel, List<String> attrs) {
         // make sure all attrs exist in the relation we specify
@@ -76,10 +79,9 @@ public class RAImpl implements RA {
     }
 
 
-    
+
 
     @Override
-    
     public Relation union(Relation rel1, Relation rel2) {
         // Schemas have to match
         if (!rel1.getAttrs().equals(rel2.getAttrs())) {
@@ -118,6 +120,8 @@ public class RAImpl implements RA {
 
         return result;
     }
+
+
 
 
     @Override
@@ -159,6 +163,9 @@ public class RAImpl implements RA {
 
         return result;
     }
+
+
+
 
     @Override
     public Relation cartesianProduct(Relation rel1, Relation rel2) {
@@ -245,13 +252,12 @@ public class RAImpl implements RA {
         return result;
     }
 
+    
+
     @Override
     public Relation join(Relation rel1, Relation rel2, Predicate p) {
-        // IllegalArgumentException thrown by cartesianProduct allowed
         Relation cartesianProduct = cartesianProduct(rel1, rel2);
         return select(cartesianProduct, p);
     }
 
 }
-    
-
