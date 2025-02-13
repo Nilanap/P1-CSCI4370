@@ -12,6 +12,8 @@ public class Driver {
     public static void main(String[] args) {
         RA ra = new RAImpl();
 
+
+        // Test Union
         Relation instructorModified = new RelationBuilder()
        .attributeNames(List.of("ID", "name", "dept_name", "cred_salary")) // Renaming salary as "cred_salary"
        .attributeTypes(List.of(Type.STRING, Type.STRING, Type.STRING, Type.DOUBLE))
@@ -52,6 +54,15 @@ public class Driver {
         System.out.println("Test Passed: Caught expected IllegalArgumentException -> " + e.getMessage());
         }
 
+        // rename testing
+        List<String> origAttr = List.of("ID", "name", "dept_name", "salary");
+        List<String> renamedAttr = List.of("Hello", "Bruh", "Hi", "Renamed");
+
+        Relation renamedRelation = ra.rename(instructor, origAttr, renamedAttr);
+
+        System.out.println("Renamed Relation:");
+        renamedRelation.print();
+
         /*  
         Relation instructor = new RelationBuilder()
                 .attributeNames(List.of("Instructor_ID", "Name", "Department", "Salary"))
@@ -74,7 +85,6 @@ public class Driver {
         student.loadData("/Users/nilanpatel/Desktop/Junior Year /Junior Year S2/DataBase Mgmtn CSCI 4370/student_export.csv");
 
         // this all tests project and select operations
-        
         // instructors above 70k (test select)
         Predicate salaryGreaterThan70k = row -> {
             double salary = row.get(3).getAsDouble(); 
@@ -98,10 +108,6 @@ public class Driver {
         Relation broke = ra.select(instructor, salaryLow);
         Relation mird = ra.select(instructor, nameMird);
 
-
-
-
-  
         System.out.println("\nInstructors with Salary > 70000:");
         highSalaryInstructors.print();
         System.out.println("\nInstructors who r broke:");
@@ -116,13 +122,11 @@ public class Driver {
 
         // Perform the project operation.
         Relation projectedRelation = ra.project(instructor, projectedAttrs);
-
         // projected relation.
         System.out.println("\nProjected Relation (Name and Salary):");
         projectedRelation.print();
 
-        
-
+    
         // this  test cart product
         // lol dont try w student x instructor it is ALOT of combos and takes 3 mins 
 

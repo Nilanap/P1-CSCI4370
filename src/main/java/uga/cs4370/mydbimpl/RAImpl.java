@@ -106,7 +106,7 @@ public class RAImpl implements RA {
 
             boolean duplicate = false;
             for (int j = 0; j < result.getSize(); j++) {
-                if (result.getRow(j).equals(row)) { // Fix: Use j instead of i
+                if (result.getRow(j).equals(row)) { // changeed ur code here to use j vs i bc logic error - nilan
                     duplicate = true;
                     break;
                 }
@@ -127,7 +127,37 @@ public class RAImpl implements RA {
 
     @Override
     public Relation rename(Relation rel, List<String> origAttr, List<String> renamedAttr) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // ensure they r same size
+        if (origAttr.size() != renamedAttr.size()) {
+            throw new IllegalArgumentException("Original and renamed attribute lists must have the same size.");
+        }
+
+        // validate they all exist in orig attr
+        for (String attr : origAttr) {
+            if (!rel.hasAttr(attr)) {
+                throw new IllegalArgumentException("Attribute " + attr + " does not exist in the relation.");
+            }
+        }
+
+        // build new list w renamed attrs
+        List<String> newAttrs = new ArrayList<>(rel.getAttrs());
+        for (int i = 0; i < origAttr.size(); i++) {
+            int index = newAttrs.indexOf(origAttr.get(i)); // locte index of org attr
+            newAttrs.set(index, renamedAttr.get(i)); // replace w renamed one
+        }
+
+        // create new relation
+        Relation result = new RelationBuilder()
+            .attributeNames(newAttrs)
+            .attributeTypes(rel.getTypes())
+            .build();
+
+       
+        for (int i = 0; i < rel.getSize(); i++) {
+            result.insert(rel.getRow(i));
+        }
+
+        return result;
     }
 
     @Override
