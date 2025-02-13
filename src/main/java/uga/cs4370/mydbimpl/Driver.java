@@ -13,6 +13,7 @@ public class Driver {
         RA ra = new RAImpl();
 
 
+        
         // Test Union
         Relation instructorModified = new RelationBuilder()
        .attributeNames(List.of("ID", "name", "dept_name", "cred_salary")) // Renaming salary as "cred_salary"
@@ -140,7 +141,7 @@ public class Driver {
             System.out.println("\nError: " + e.getMessage());
         }
             */
-
-
     }
+
 }
+

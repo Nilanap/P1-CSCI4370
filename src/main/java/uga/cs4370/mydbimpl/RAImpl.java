@@ -11,7 +11,7 @@ import uga.cs4370.mydb.RelationBuilder;
 import uga.cs4370.mydb.Type;
 
 
-// Testing out Nilan Branch
+// Main Branch, all contribs by group up to date
 
 public class RAImpl implements RA {
 
@@ -124,11 +124,47 @@ public class RAImpl implements RA {
 
 
 
+    //Bryce method
     @Override
     public Relation diff(Relation rel1, Relation rel2) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // Check if rel1 and rel2 have the same schema
+        if (!rel1.getAttrs().equals(rel2.getAttrs())) {
+            throw new IllegalArgumentException("Relations must have the same attributes for set difference.");
+        }
+        if (!rel1.getTypes().equals(rel2.getTypes())) {
+            throw new IllegalArgumentException("Relations must have the same types for set difference.");
+        }
+
+        // Create a new relation with the same schema as rel1 and rel2
+        Relation result = new RelationBuilder()
+                .attributeNames(rel1.getAttrs())
+                .attributeTypes(rel1.getTypes())
+                .build();
+
+        // Iterate through each row in rel1
+        for (int i = 0; i < rel1.getSize(); i++) {
+            List<Cell> row = rel1.getRow(i);
+
+            // Check if the row is not in rel2
+            boolean found = false;
+            for (int j = 0; j < rel2.getSize(); j++) {
+                if (row.equals(rel2.getRow(j))) {
+                    found = true;
+                    break;
+                }
+            }
+
+            // If the row is not in rel2, add it to the result
+            if (!found) {
+                result.insert(row);
+            }
+        }
+
+        return result;
     }
 
+
+    //Bryce method
     @Override
     public Relation rename(Relation rel, List<String> origAttr, List<String> renamedAttr) {
         // ensure they r same size
