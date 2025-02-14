@@ -141,6 +141,69 @@ public class Driver {
             System.out.println("\nError: " + e.getMessage());
         }
             */
+        
+        
+    }
+
+    // Test SQL query: SELECT name, course_id, sec_id, year, building FROM (((SELECT ID, name, building FROM ((SELECT ID, name, dept_name FROM instructor) iT NATURAL JOIN (SELECT dept_name, building FROM department) dT)) _ NATURAL JOIN teaches)) NATURAL JOIN section ORDER BY ID, course_id;
+    private static final String QUERY_MICHAEL = "Find the name of each instructor who teaches a section that is located in the building of the department the instructor belongs to, as well as which section that is (course and section IDs, year, and seemster) and what building it is in.";
+    private static void queryMichael(RA ra) {
+        System.out.println(QUERY_MICHAEL);
+
+        Relation instructor = new RelationBuilder()
+            .attributeNames(List.of("ID", "name", "dept_name", "salary"))
+            .attributeTypes(List.of(Type.STRING, Type.STRING, Type.STRING, Type.DOUBLE))
+            .build();
+        Relation department = new RelationBuilder()
+            .attributeNames(List.of("dept_name", "building", "budget"))
+            .attributeTypes(List.of(Type.STRING, Type.STRING, Type.DOUBLE))
+            .build();
+        Relation teaches = new RelationBuilder()
+            .attributeNames(List.of("ID", "course_id", "sec_id", "semester", "year"))
+            .attributeTypes(List.of(Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.INTEGER))
+            .build();
+        Relation section = new RelationBuilder()
+            .attributeNames(List.of("course_id", "sec_id", "semester", "year", "building", "room_number", "time_slot_id"))
+            .attributeTypes(List.of(Type.STRING, Type.STRING, Type.STRING, Type.INTEGER, Type.STRING, Type.STRING, Type.STRING))
+            .build();
+        
+            
+        instructor.loadData("(path removed)");
+        department.loadData("(path removed)");
+        teaches.loadData("(path removed)");
+        section.loadData("(path removed)");
+
+        
+        // Just the attributes we need from instructor
+        // [ID, name, dept_name]
+        Relation instructorTrim = ra.project(instructor, List.of("ID", "name", "dept_name"));
+
+        // Just the attributes we need from department
+        // [dept_name, building]
+        Relation departmentTrim = ra.project(department, List.of("dept_name", "building"));
+
+        // Each instructor's ID and name linked to the department they belong to and the building that department uses
+        // [ID, name, dept_name, building]
+        Relation instrWithDept = ra.join(instructorTrim, departmentTrim);
+
+        // We no longer need dept_name, we only care about the building and the instructor.
+        // We now have every instructor's ID and name linked to the building of the department they belong to.
+        // [ID, name, building]
+        Relation instrWithDeptTrim = ra.project(instrWithDept, List.of("ID", "name", "building"));
+
+        // We now have each instructor's ID, name, department building linked with every section they have ever taught.
+        // [ID, name, building, course_id, sec_id, semester, year]
+        Relation instrWithTeaches = ra.join(instrWithDeptTrim, teaches);
+
+        // Link each instructor/building/section key combo to the other info about each section
+        // [ID, name, building, course_id, sec_id, semester, year, room_number, time_slot_id]
+        Relation instrWithSectionSameBuilding = ra.join(instrWithTeaches, section);
+
+        // Get the attributes we care about
+        Relation result = ra.project(instrWithSectionSameBuilding, 
+            List.of("name", "course_id", "sec_id", "year", "building"));
+        
+        result.print();
     }
 
 }
