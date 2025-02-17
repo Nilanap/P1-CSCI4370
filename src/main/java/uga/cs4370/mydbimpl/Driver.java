@@ -2,18 +2,71 @@ package uga.cs4370.mydbimpl;
 
 import java.util.List;
 
+import uga.cs4370.mydb.Predicate;
 import uga.cs4370.mydb.RA;
 import uga.cs4370.mydb.Relation;
 import uga.cs4370.mydb.RelationBuilder;
 import uga.cs4370.mydb.Type;
+;
 
 public class Driver {
 
     public static void main(String[] args) {
         RA ra = new RAImpl();
 
+        Relation instructor = new RelationBuilder()
+                .attributeNames(List.of("Instructor_ID", "Name", "Department", "Salary"))
+                .attributeTypes(List.of(Type.INTEGER, Type.STRING, Type.STRING, Type.DOUBLE))
+                .build();
+        instructor.loadData("/Users/nilanpatel/Desktop/Junior Year /Junior Year S2/DataBase Mgmtn CSCI 4370/instructor_export.csv");
+        System.out.println("Instructor Relation:");
+        instructor.print();
+        Relation department = new RelationBuilder()
+                .attributeNames(List.of("Department", "Building Name", "Budget"))
+                .attributeTypes(List.of(Type.STRING, Type.STRING, Type.DOUBLE))
+                .build();
+        department.loadData("/Users/nilanpatel/Desktop/Junior Year /Junior Year S2/DataBase Mgmtn CSCI 4370/department_export.csv");
+        System.out.println("Department Relation:");
+        department.print();
+        Relation student = new RelationBuilder()
+                .attributeNames(List.of("Student_ID", " Last Name", "Major", "Credit Hours"))
+                .attributeTypes(List.of(Type.DOUBLE, Type.STRING, Type.STRING, Type.DOUBLE))
+                .build();
+        student.loadData("/Users/nilanpatel/Desktop/Junior Year /Junior Year S2/DataBase Mgmtn CSCI 4370/student_export.csv");
 
-        
+
+
+
+
+
+
+        System.out.println("Query 1: instructors who make over 70k in departments with a budget > $100000");
+        System.out.println("Instructors earning more than the average salary in high-budget departments");
+
+        Predicate salaryGreaterThan70k = row -> {
+            double salary = row.get(3).getAsDouble(); 
+            return salary > 70000;
+        };
+        Relation highSalaryInstructors = ra.select(instructor, salaryGreaterThan70k);
+        Predicate budgetGreaterThan100k = row -> {
+            double budget = row.get(2).getAsDouble(); // Budget is the 3rd attribute in department.
+            return budget > 100000;
+        };
+        Relation highBudgetDepartments = ra.select(department, budgetGreaterThan100k);
+        Relation joinResult = ra.join(highSalaryInstructors, highBudgetDepartments);
+
+        List<String> projectedAttrs = List.of("Name", "Department", "Salary", "Building Name", "Budget");
+        Relation query1Result = ra.project(joinResult, projectedAttrs);
+
+        System.out.println("Query 1: Instructors who make over 70k in departments with a budget > $100,000");
+        query1Result.print();
+
+
+
+       
+     
+
+        /* 
         // Test Union
         Relation instructorModified = new RelationBuilder()
        .attributeNames(List.of("ID", "name", "dept_name", "cred_salary")) // Renaming salary as "cred_salary"
@@ -64,27 +117,10 @@ public class Driver {
         System.out.println("Renamed Relation:");
         renamedRelation.print();
 
-        /*  
-        Relation instructor = new RelationBuilder()
-                .attributeNames(List.of("Instructor_ID", "Name", "Department", "Salary"))
-                .attributeTypes(List.of(Type.INTEGER, Type.STRING, Type.STRING, Type.DOUBLE))
-                .build();
-        instructor.loadData("/Users/nilanpatel/Desktop/Junior Year /Junior Year S2/DataBase Mgmtn CSCI 4370/instructor_export.csv");
-        System.out.println("Instructor Relation:");
-        instructor.print();
-        Relation department = new RelationBuilder()
-                .attributeNames(List.of("Department", "Building Name", "Budget"))
-                .attributeTypes(List.of(Type.STRING, Type.STRING, Type.DOUBLE))
-                .build();
-        department.loadData("/Users/nilanpatel/Desktop/Junior Year /Junior Year S2/DataBase Mgmtn CSCI 4370/department_export.csv");
-        System.out.println("Department Relation:");
-        department.print();
-        Relation student = new RelationBuilder()
-                .attributeNames(List.of("Student_ID", " Last Name", "Major", "Credit Hours"))
-                .attributeTypes(List.of(Type.DOUBLE, Type.STRING, Type.STRING, Type.DOUBLE))
-                .build();
-        student.loadData("/Users/nilanpatel/Desktop/Junior Year /Junior Year S2/DataBase Mgmtn CSCI 4370/student_export.csv");
+        */
+        
 
+        /* 
         // this all tests project and select operations
         // instructors above 70k (test select)
         Predicate salaryGreaterThan70k = row -> {
