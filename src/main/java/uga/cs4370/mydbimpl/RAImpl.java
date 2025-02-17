@@ -292,8 +292,9 @@ public class RAImpl implements RA {
 
     @Override
     public Relation join(Relation rel1, Relation rel2, Predicate p) {
+        // IllegalArgumentException thrown by cartesianProduct allowed
         Relation cartesianProduct = cartesianProduct(rel1, rel2);
         return select(cartesianProduct, p);
     }
-
+    
 }
