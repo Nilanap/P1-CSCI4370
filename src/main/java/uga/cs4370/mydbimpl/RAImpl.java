@@ -1,7 +1,9 @@
 package uga.cs4370.mydbimpl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import uga.cs4370.mydb.Cell;
 import uga.cs4370.mydb.Predicate;
@@ -10,17 +12,15 @@ import uga.cs4370.mydb.Relation;
 import uga.cs4370.mydb.RelationBuilder;
 import uga.cs4370.mydb.Type;
 
-
 // Main Branch, all contribs by group up to date
-
 public class RAImpl implements RA {
 
     @Override
     public Relation select(Relation rel, Predicate p) {
         Relation result = new RelationBuilder()
-            .attributeNames(rel.getAttrs())
-            .attributeTypes(rel.getTypes())
-            .build();
+                .attributeNames(rel.getAttrs())
+                .attributeTypes(rel.getTypes())
+                .build();
 
         // iterating each row
         for (int i = 0; i < rel.getSize(); i++) {
@@ -35,9 +35,6 @@ public class RAImpl implements RA {
         return result;
     }
 
-
-
-
     @Override
     public Relation project(Relation rel, List<String> attrs) {
         // make sure all attrs exist in the relation we specify
@@ -50,36 +47,37 @@ public class RAImpl implements RA {
         // creates new list for thr attrs
         List<Type> projectedTypes = new ArrayList<>();
         for (String attr : attrs) {
-            int index = rel.getAttrIndex(attr); 
-            projectedTypes.add(rel.getTypes().get(index)); 
+            int index = rel.getAttrIndex(attr);
+            projectedTypes.add(rel.getTypes().get(index));
         }
 
         // create new project relation thing 
         Relation result = new RelationBuilder()
-            .attributeNames(attrs)
-            .attributeTypes(projectedTypes)
-            .build();
+                .attributeNames(attrs)
+                .attributeTypes(projectedTypes)
+                .build();
 
-        
+        // Use set to prevent duplicates since this is supposed to be relational algebra (sets have no duplicate elements)
+        Set<List<Cell>> newRows = new HashSet<>();
         for (int i = 0; i < rel.getSize(); i++) {
             List<Cell> row = rel.getRow(i);
             List<Cell> projectedRow = new ArrayList<>();
 
             // extract the cell columns from thr rows above wiht the stuff we want
             for (String attr : attrs) {
-                int index = rel.getAttrIndex(attr); 
-                projectedRow.add(row.get(index)); 
+                int index = rel.getAttrIndex(attr);
+                projectedRow.add(row.get(index));
             }
 
-            
-            result.insert(projectedRow);
+            newRows.add(projectedRow);
+        }
+
+        for (List<Cell> newRow : newRows) {
+            result.insert(newRow);
         }
 
         return result;
     }
-
-
-
 
     @Override
     public Relation union(Relation rel1, Relation rel2) {
@@ -121,9 +119,6 @@ public class RAImpl implements RA {
         return result;
     }
 
-
-
-
     //Bryce method
     @Override
     public Relation diff(Relation rel1, Relation rel2) {
@@ -163,7 +158,6 @@ public class RAImpl implements RA {
         return result;
     }
 
-
     //Bryce method
     @Override
     public Relation rename(Relation rel, List<String> origAttr, List<String> renamedAttr) {
@@ -188,20 +182,16 @@ public class RAImpl implements RA {
 
         // create new relation
         Relation result = new RelationBuilder()
-            .attributeNames(newAttrs)
-            .attributeTypes(rel.getTypes())
-            .build();
+                .attributeNames(newAttrs)
+                .attributeTypes(rel.getTypes())
+                .build();
 
-       
         for (int i = 0; i < rel.getSize(); i++) {
             result.insert(rel.getRow(i));
         }
 
         return result;
     }
-
-
-
 
     @Override
     public Relation cartesianProduct(Relation rel1, Relation rel2) {
@@ -222,9 +212,9 @@ public class RAImpl implements RA {
 
         // builds the relation
         Relation result = new RelationBuilder()
-            .attributeNames(newAttrs)
-            .attributeTypes(newTypes)
-            .build();
+                .attributeNames(newAttrs)
+                .attributeTypes(newTypes)
+                .build();
 
         // loop thru to perform cart product 
         for (int i = 0; i < rel1.getSize(); i++) {
@@ -287,8 +277,6 @@ public class RAImpl implements RA {
         );
         return result;
     }
-
-    
 
     @Override
     public Relation join(Relation rel1, Relation rel2, Predicate p) {
